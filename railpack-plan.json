@@ -1,0 +1,10 @@
+{
+  "packages": {
+    "node": "22"
+  },
+  "steps": [
+    { "name": "install", "cmd": "npm install" },
+    { "name": "build", "cmd": "npm run build" },
+    { "name": "start", "cmd": "npm run start" }
+  ]
+}
