@@ -16,6 +16,12 @@ interface Task {
   assignee: { _id: string; name: string; email: string } | null;
   project: { _id: string; name: string };
   createdBy: { name: string; email: string };
+  reports?: Array<{
+    userId: { _id: string; name: string; email: string } | string;
+    message: string;
+    status?: string;
+    createdAt: string;
+  }>;
   createdAt: string;
 }
 
