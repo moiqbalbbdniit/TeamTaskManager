@@ -13,12 +13,23 @@ export async function connectDB(): Promise<Connection> {
     throw new Error('MONGODB_URI is not defined');
   }
 
+  const uriDatabaseName = (() => {
+    try {
+      const parsed = new URL(mongoUri);
+      return parsed.pathname.replace(/^\//, '') || '(default)';
+    } catch {
+      return '(unparseable)';
+    }
+  })();
+
   try {
     const connection = await mongoose.connect(mongoUri, {
       serverSelectionTimeoutMS: 10000,
     });
     cachedConnection = connection.connection;
-    console.log('Database connected successfully');
+    console.log(
+      `Database connected successfully: ${cachedConnection.name} @ ${cachedConnection.host} (uri db: ${uriDatabaseName})`
+    );
     return cachedConnection;
   } catch (error) {
     console.error('Database connection error:', error);
@@ -33,7 +44,9 @@ export async function connectDB(): Promise<Connection> {
           serverSelectionTimeoutMS: 10000,
         });
         cachedConnection = connection.connection;
-        console.log('Database connected successfully after DNS fallback');
+        console.log(
+          `Database connected successfully after DNS fallback: ${cachedConnection.name} @ ${cachedConnection.host} (uri db: ${uriDatabaseName})`
+        );
         return cachedConnection;
       } catch (retryError) {
         console.error('Database connection retry failed:', retryError);
