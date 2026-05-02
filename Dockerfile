@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies (with retries for flaky npm)
-RUN npm install --no-audit --no-fund --legacy-peer-deps || npm install --no-audit --no-fund --legacy-peer-deps
+# Install dependencies
+RUN npm install --no-audit --no-fund --legacy-peer-deps 2>&1 | grep -v "warn deprecated" || true
 
 # Copy source
 COPY . .
@@ -20,16 +20,15 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-# Copy package files from builder
-COPY --from=builder /app/package*.json ./
+# Copy package.json for npm start
+COPY package.json ./
 
-# Install only production dependencies (lightweight)
-RUN npm install --only=production --no-audit --no-fund --legacy-peer-deps || npm install --only=production --no-audit --no-fund --legacy-peer-deps
+# Install only production dependencies
+RUN npm install --only=production --no-audit --no-fund --legacy-peer-deps 2>&1 | grep -v "warn deprecated" || true && \
+    npm cache clean --force
 
-# Copy built app from builder (minimal size)
+# Copy built Next.js app from builder
 COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/src ./src
 
 # Set production environment
 ENV NODE_ENV=production
@@ -38,9 +37,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Expose port
 EXPOSE 3000
 
-# Health check for Railway
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})" || exit 1
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://localhost:3000 || exit 1
 
-# Start the app (Railway will use PORT env var automatically)
+# Start production server
 CMD ["npm", "start"]
