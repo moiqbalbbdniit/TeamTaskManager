@@ -1,0 +1,8 @@
+{
+  "service": {
+    "sourceRepo": "https://github.com/moiqbalbbdniit/TeamTaskManager.git",
+    "buildCommand": "docker-compose build",
+    "startCommand": "docker-compose up",
+    "ports": [3000, 27017]
+  }
+}

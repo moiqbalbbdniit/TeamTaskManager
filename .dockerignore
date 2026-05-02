@@ -19,3 +19,9 @@ dist
 .env.example
 .github
 .vercelignore
+src/**/*.test.ts
+src/**/*.spec.ts
+*.log
+coverage/
+.railway/
+.jest/

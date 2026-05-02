@@ -5,8 +5,8 @@ services:
     image: mongo:7.0
     container_name: taskmanager-mongodb
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: secure_password_123
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-secure_password_123}
       MONGO_INITDB_DATABASE: teamtaskmanager
     ports:
       - "27017:27017"
@@ -28,10 +28,10 @@ services:
     container_name: taskmanager-app
     environment:
       NODE_ENV: production
-      MONGODB_URI: mongodb://admin:secure_password_123@mongodb:27017/teamtaskmanager?authSource=admin
-      JWT_SECRET: ${JWT_SECRET:-your_jwt_secret_change_in_production}
+      MONGODB_URI: mongodb://${MONGO_USER:-admin}:${MONGO_PASSWORD:-secure_password_123}@mongodb:27017/teamtaskmanager?authSource=admin
+      JWT_SECRET: ${JWT_SECRET:-jwt_secret_key_12345678901234567890}
       ADMIN_SIGNUP_KEY: ${ADMIN_SIGNUP_KEY:-admin123}
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-next_auth_secret_change_in_production}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-nextauth_secret_12345678901234567890}
     ports:
       - "3000:3000"
     depends_on:
