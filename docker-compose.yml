@@ -28,7 +28,8 @@ services:
     container_name: taskmanager-app
     environment:
       NODE_ENV: production
-      MONGODB_URI: mongodb://${MONGO_USER:-admin}:${MONGO_PASSWORD:-secure_password_123}@mongodb:27017/teamtaskmanager?authSource=admin
+      # Use the Atlas connection string provided in project .env (MONGODB_URI)
+      MONGODB_URI: ${MONGODB_URI}
       JWT_SECRET: ${JWT_SECRET:-jwt_secret_key_12345678901234567890}
       ADMIN_SIGNUP_KEY: ${ADMIN_SIGNUP_KEY:-admin123}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-nextauth_secret_12345678901234567890}
