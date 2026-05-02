@@ -538,7 +538,72 @@ src/
 
 ## 🚢 Deployment
 
-### Deploy to Railway.app
+### Deploy with Docker (Recommended)
+
+**Local Docker Testing:**
+```bash
+# Build and run with docker-compose
+docker-compose up --build
+
+# Access the app
+# App: http://localhost:3000
+# MongoDB: mongodb://localhost:27017
+```
+
+**Environment Variables for Docker:**
+```bash
+# Create .env file
+cat > .env << EOF
+MONGODB_URI=mongodb://admin:secure_password_123@mongodb:27017/teamtaskmanager?authSource=admin
+JWT_SECRET=your_jwt_secret_key_here
+NEXTAUTH_SECRET=your_nextauth_secret_here
+ADMIN_SIGNUP_KEY=admin123
+NODE_ENV=production
+EOF
+```
+
+### Deploy to Vercel with Docker
+
+1. **Push code to GitHub**
+```bash
+git add .
+git commit -m "Docker containerized deployment"
+git push origin main
+```
+
+2. **Connect to Vercel**
+   - Go to [Vercel.com](https://vercel.com)
+   - Click "New Project"
+   - Select "Import Git Repository"
+   - Choose this GitHub repository
+   - Click "Import"
+
+3. **Configure Docker Build**
+   - In Project Settings → Build & Development Settings:
+     - Framework: **Other**
+     - Build Command: `npm run build`
+     - Output Directory: `.next`
+   - Enable "Docker Build" in Advanced Settings
+
+4. **Set Environment Variables**
+   - In Settings → Environment Variables, add:
+     - `MONGODB_URI` - Your MongoDB Atlas connection string (https://mongodb.com/cloud/atlas)
+     - `JWT_SECRET` - Generate with: `openssl rand -base64 32`
+     - `NEXTAUTH_SECRET` - Generate with: `openssl rand -base64 32`
+     - `ADMIN_SIGNUP_KEY` - Your admin invite key (e.g., `admin_key_123`)
+     - `NODE_ENV` - Set to `production`
+
+5. **Deploy**
+   - Click "Deploy"
+   - Wait for build to complete (~5-10 minutes)
+   - Your app will be live at `https://<your-project>.vercel.app`
+
+**Vercel + MongoDB Atlas Setup:**
+- Use MongoDB Atlas free tier: https://mongodb.com/cloud/atlas
+- Whitelist Vercel IP: Allow from anywhere (0.0.0.0/0) in MongoDB Atlas Network Access
+- Connection string format: `mongodb+srv://username:password@cluster.mongodb.net/teamtaskmanager?retryWrites=true&w=majority`
+
+### Alternative: Deploy to Railway.app
 
 1. **Push code to GitHub**
 ```bash
@@ -553,12 +618,7 @@ git push origin main
    - Select "Deploy from GitHub"
    - Select this repository
 
-3. **Set environment variables**
-   - In Railway dashboard, add variables:
-     - `MONGODB_URI` - Your MongoDB Atlas connection string
-     - `JWT_SECRET` - Strong random string
-     - `NEXTAUTH_SECRET` - Strong random string
-     - `ADMIN_SIGNUP_KEY` - Your admin invite key
+3. **Set environment variables** (same as Docker section above)
 
 4. **Deploy**
    - Railway auto-deploys on git push
